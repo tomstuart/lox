@@ -3,9 +3,20 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      BOOK_DIR: craftinginterpreters
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+
+      - uses: actions/checkout@v2
+        with:
+          repository: munificent/craftinginterpreters
+          path: ${{ env.BOOK_DIR }}
+      - uses: dart-lang/setup-dart@v1
+      - run: make get
+        working-directory: ${{ env.BOOK_DIR }}
+
       - run: bundle exec rspec
