@@ -1,3 +1,4 @@
+require 'lox/interpreter'
 require 'lox/logger'
 
 module Lox
