@@ -8,11 +8,29 @@ RSpec.describe Lox::Scanner do
           { type: :eof }
         )
       end
+
+      it 'tokenises simple operators' do
+        expect('(){},.-+;*').to tokenise_as(
+          { type: :left_paren },
+          { type: :right_paren },
+          { type: :left_brace },
+          { type: :right_brace },
+          { type: :comma },
+          { type: :dot },
+          { type: :minus },
+          { type: :plus },
+          { type: :semicolon },
+          { type: :star },
+          { type: :eof }
+        )
+      end
     end
 
     describe 'error handling' do
       it 'skips an unexpected character and reports an error' do
-        expect('#').to tokenise_as(
+        expect('(#)').to tokenise_as(
+          { type: :left_paren },
+          { type: :right_paren },
           { type: :eof }
         ).with_error('Unexpected character')
       end

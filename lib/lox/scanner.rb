@@ -2,6 +2,20 @@ require 'lox/token'
 
 module Lox
   class Scanner
+    SIMPLE_OPERATORS =
+      {
+        '(' => :left_paren,
+        ')' => :right_paren,
+        '{' => :left_brace,
+        '}' => :right_brace,
+        ',' => :comma,
+        '.' => :dot,
+        '-' => :minus,
+        '+' => :plus,
+        ';' => :semicolon,
+        '*' => :star
+      }
+
     def initialize(source, logger)
       self.characters = source.each_char
       self.logger = logger
@@ -23,9 +37,20 @@ module Lox
     attr_accessor :characters, :logger, :line
 
     def read_token
-      read_character
-      logger.error(line, 'Unexpected character')
-      read_token
+      case next_character
+      when *SIMPLE_OPERATORS.keys
+        lexeme = read_character
+        type = SIMPLE_OPERATORS.fetch(lexeme)
+        Token.new(type:, lexeme:, line:)
+      else
+        read_character
+        logger.error(line, 'Unexpected character')
+        read_token
+      end
+    end
+
+    def next_character
+      characters.peek
     end
 
     def read_character
