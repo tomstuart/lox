@@ -9,6 +9,14 @@ RSpec.describe Lox::Scanner do
         )
       end
     end
+
+    describe 'error handling' do
+      it 'skips an unexpected character and reports an error' do
+        expect('#').to tokenise_as(
+          { type: :eof }
+        ).with_error('Unexpected character')
+      end
+    end
   end
 
   matcher :tokenise_as do |*expected_token_attributes|
