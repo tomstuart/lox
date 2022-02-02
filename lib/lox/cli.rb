@@ -1,3 +1,5 @@
+require 'lox/logger'
+
 module Lox
   class CLI
     def initialize(input, output)
