@@ -1,4 +1,16 @@
-RSpec.describe do
+require 'lox/scanner'
+
+RSpec.describe Lox::Scanner do
+  describe '#each_token' do
+    describe 'tokenising' do
+      it 'tokenises the empty string' do
+        expect('').to tokenise_as(
+          { type: :eof }
+        )
+      end
+    end
+  end
+
   matcher :tokenise_as do |*expected_token_attributes|
     match do |source|
       logger = instance_double('Lox::Logger')

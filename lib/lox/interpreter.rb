@@ -1,3 +1,5 @@
+require 'lox/scanner'
+
 module Lox
   class Interpreter
     def initialize(output, logger)
