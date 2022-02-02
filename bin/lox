@@ -1,1 +1,3 @@
 #!/usr/bin/env ruby
+
+Lox::CLI.new($stdin, $stdout).start(ARGV)
