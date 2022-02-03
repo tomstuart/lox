@@ -2,7 +2,7 @@ require 'lox/scanner'
 
 RSpec.describe Lox::Scanner do
   describe '#each_token' do
-    describe 'tokenising' do
+    shared_examples 'tokenising' do
       it 'tokenises the empty string' do
         expect('').to tokenise_as(
           { type: :eof }
@@ -80,7 +80,7 @@ RSpec.describe Lox::Scanner do
       end
     end
 
-    describe 'error handling' do
+    shared_examples 'error handling' do
       it 'skips an unexpected character and reports an error' do
         expect('(#)').to tokenise_as(
           { type: :left_paren },
@@ -90,7 +90,7 @@ RSpec.describe Lox::Scanner do
       end
     end
 
-    describe 'EOF handling' do
+    shared_examples 'EOF handling' do
       it 'tokenises a string ending with a one-character compound operator' do
         expect('*<').to tokenise_as(
           { type: :star },
@@ -129,6 +129,10 @@ RSpec.describe Lox::Scanner do
         )
       end
     end
+
+    include_examples 'tokenising'
+    include_examples 'error handling'
+    include_examples 'EOF handling'
   end
 
   matcher :tokenise_as do |*expected_token_attributes|
