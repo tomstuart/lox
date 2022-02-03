@@ -56,6 +56,28 @@ RSpec.describe Lox::Scanner do
           { type: :eof }
         )
       end
+
+      it 'ignores whitespace' do
+        expect(" ( \t ) \n { \r } ").to tokenise_as(
+          { type: :left_paren },
+          { type: :right_paren },
+          { type: :left_brace },
+          { type: :right_brace },
+          { type: :eof }
+        )
+      end
+
+      it 'keeps track of the current line number' do
+        expect(";)\n;)\n;)").to tokenise_as(
+          { type: :semicolon, line: 1 },
+          { type: :right_paren, line: 1 },
+          { type: :semicolon, line: 2 },
+          { type: :right_paren, line: 2 },
+          { type: :semicolon, line: 3 },
+          { type: :right_paren, line: 3 },
+          { type: :eof }
+        )
+      end
     end
 
     describe 'error handling' do

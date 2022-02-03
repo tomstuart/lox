@@ -4,7 +4,7 @@ require 'lox/token'
 module Lox
   class Scanner
     EQUAL, SLASH = %w[= /]
-    NEWLINE = "\n"
+    WHITESPACE = ' ', "\t", "\r", (NEWLINE = "\n")
 
     SIMPLE_OPERATORS =
       {
@@ -50,7 +50,7 @@ module Lox
     attr_accessor :characters, :logger, :line
 
     def read_token
-      skip_comments
+      skip_whitespace_and_comments
 
       case next_character
       when *SIMPLE_OPERATORS.keys
@@ -74,9 +74,12 @@ module Lox
       end
     end
 
-    def skip_comments
+    def skip_whitespace_and_comments
       loop do
-        if 2.times.all? { |lookahead| next_character(lookahead:) == SLASH }
+        if WHITESPACE.include?(next_character)
+          whitespace = read_character
+          self.line += 1 if whitespace == NEWLINE
+        elsif 2.times.all? { |lookahead| next_character(lookahead:) == SLASH }
           2.times { read_character(SLASH) }
           read_character until next_character == NEWLINE
         else
