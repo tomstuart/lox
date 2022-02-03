@@ -53,8 +53,10 @@ module Lox
       characters.peek
     end
 
-    def read_character
-      characters.next
+    def read_character(expected = nil)
+      characters.next.tap do |actual|
+        raise unless actual == expected || expected.nil?
+      end
     end
   end
 end
