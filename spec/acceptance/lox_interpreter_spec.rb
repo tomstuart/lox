@@ -2,7 +2,7 @@ require 'open3'
 
 RSpec.describe 'the Lox interpreter' do
   CHAPTERS = {
-    chap04_scanning:    :wip,
+    chap04_scanning:    :done,
     chap06_parsing:     :todo,
     chap07_evaluating:  :todo,
     chap08_statements:  :todo,

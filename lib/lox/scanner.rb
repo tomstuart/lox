@@ -6,6 +6,12 @@ module Lox
     DOT, EQUAL, QUOTE, SLASH = %w[. = " /]
     WHITESPACE = ' ', "\t", "\r", (NEWLINE = "\n")
 
+    KEYWORDS =
+      %w[
+        and class else false for fun if nil or
+        print return super this true var while
+      ]
+
     SIMPLE_OPERATORS =
       {
         '(' => :left_paren,
@@ -129,8 +135,9 @@ module Lox
       stop_at_eof do
         lexeme << read_character while alpha_numeric?(next_character)
       end
+      type = KEYWORDS.include?(lexeme) ? lexeme.to_sym : :identifier
 
-      Token.new(type: :identifier, lexeme:, line:)
+      Token.new(type:, lexeme:, line:)
     end
 
     def next_character(lookahead: 0)

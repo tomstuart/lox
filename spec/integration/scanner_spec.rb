@@ -137,6 +137,31 @@ RSpec.describe Lox::Scanner do
           { type: :eof }
         )
       end
+
+      it 'tokenises keywords' do
+        expect(
+          'and class else false for fun if nil or ' \
+          'print return super this true var while'
+        ).to tokenise_as(
+          { type: :and },
+          { type: :class },
+          { type: :else },
+          { type: :false },
+          { type: :for },
+          { type: :fun },
+          { type: :if },
+          { type: :nil },
+          { type: :or },
+          { type: :print },
+          { type: :return },
+          { type: :super },
+          { type: :this },
+          { type: :true },
+          { type: :var },
+          { type: :while },
+          { type: :eof }
+        )
+      end
     end
 
     shared_examples 'error handling' do
