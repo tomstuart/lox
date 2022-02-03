@@ -71,6 +71,8 @@ module Lox
         read_string_token
       when method(:digit?)
         read_number_token
+      when method(:alpha?)
+        read_identifier_token
       else
         read_character
         logger.error(line, 'Unexpected character')
@@ -122,6 +124,15 @@ module Lox
       Token.new(type: :number, lexeme:, literal:, line:)
     end
 
+    def read_identifier_token
+      lexeme = ''
+      stop_at_eof do
+        lexeme << read_character while alpha_numeric?(next_character)
+      end
+
+      Token.new(type: :identifier, lexeme:, line:)
+    end
+
     def next_character(lookahead: 0)
       characters.peek(lookahead:)
     end
@@ -134,6 +145,14 @@ module Lox
 
     def digit?(character)
       ('0'..'9').include?(character)
+    end
+
+    def alpha?(character)
+      ['a'..'z', 'A'..'Z', '_'].any? { _1.include?(character) }
+    end
+
+    def alpha_numeric?(character)
+      alpha?(character) || digit?(character)
     end
 
     def stop_at_eof

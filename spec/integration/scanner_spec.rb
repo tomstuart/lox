@@ -128,6 +128,15 @@ RSpec.describe Lox::Scanner do
           { type: :eof }
         )
       end
+
+      it 'tokenises identifiers' do
+        expect('1hello2 _world_').to tokenise_as(
+          { type: :number, literal: 1 },
+          { type: :identifier, lexeme: 'hello2' },
+          { type: :identifier, lexeme: '_world_' },
+          { type: :eof }
+        )
+      end
     end
 
     shared_examples 'error handling' do
@@ -207,6 +216,14 @@ RSpec.describe Lox::Scanner do
         expect('*42.1').to tokenise_as(
           { type: :star },
           { type: :number, literal: 42.1 },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a string ending with an identifier' do
+        expect('hello world').to tokenise_as(
+          { type: :identifier, lexeme: 'hello' },
+          { type: :identifier, lexeme: 'world' },
           { type: :eof }
         )
       end
