@@ -55,6 +55,37 @@ RSpec.describe Lox::CLI do
       end
     end
 
+    context 'with no arguments' do
+      let(:lines) { ["hello world\n", "goodbye world\n"] }
+      let(:input) { StringIO.new(lines.join) }
+      let(:output) { StringIO.new }
+      let(:arguments) { [] }
+
+      before do
+        allow(interpreter).to receive(:run)
+        allow(logger).to receive(:clear_errors)
+        allow(logger).to receive(:has_errored?).and_return(false)
+      end
+
+      it 'prompts for user input' do
+        cli.start(arguments)
+        expect(output.string).to start_with('> ')
+      end
+
+      it 'reads and evaluates the user input' do
+        cli.start(arguments)
+
+        lines.each do |line|
+          expect(interpreter).to have_received(:run).with(line).ordered
+        end
+      end
+
+      it 'clears the logger’s error state after each evaluation' do
+        cli.start(arguments)
+        expect(logger).to have_received(:clear_errors).exactly(lines.length).times
+      end
+    end
+
     context 'with unrecognised arguments' do
       let(:output) { StringIO.new }
       let(:arguments) { [double, double] }

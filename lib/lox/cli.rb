@@ -11,6 +11,8 @@ module Lox
       case args
       in [filename]
         run_file(filename)
+      in []
+        run_prompt
       else
         output.puts "Usage: #{$PROGRAM_NAME} [script]"
         exit(64)
@@ -26,6 +28,15 @@ module Lox
         interpreter.run(source)
       end
       exit(65) if logger.has_errored?
+    end
+
+    def run_prompt
+      loop do
+        output.print '> '
+        break unless line = input.gets
+        interpreter.run(line)
+        logger.clear_errors
+      end
     end
   end
 end
