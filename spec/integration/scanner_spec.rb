@@ -24,6 +24,20 @@ RSpec.describe Lox::Scanner do
           { type: :eof }
         )
       end
+
+      it 'tokenises compound operators' do
+        expect('==!!=<<=>>==').to tokenise_as(
+          { type: :equal_equal },
+          { type: :bang },
+          { type: :bang_equal },
+          { type: :less },
+          { type: :less_equal },
+          { type: :greater },
+          { type: :greater_equal },
+          { type: :equal },
+          { type: :eof }
+        )
+      end
     end
 
     describe 'error handling' do
@@ -33,6 +47,24 @@ RSpec.describe Lox::Scanner do
           { type: :right_paren },
           { type: :eof }
         ).with_error('Unexpected character')
+      end
+    end
+
+    describe 'EOF handling' do
+      it 'tokenises a string ending with a one-character compound operator' do
+        expect('*<').to tokenise_as(
+          { type: :star },
+          { type: :less },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a string ending with a two-character compound operator' do
+        expect('*<=').to tokenise_as(
+          { type: :star },
+          { type: :less_equal },
+          { type: :eof }
+        )
       end
     end
   end
