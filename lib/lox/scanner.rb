@@ -3,7 +3,7 @@ require 'lox/token'
 
 module Lox
   class Scanner
-    EQUAL, QUOTE, SLASH = %w[= " /]
+    DOT, EQUAL, QUOTE, SLASH = %w[. = " /]
     WHITESPACE = ' ', "\t", "\r", (NEWLINE = "\n")
 
     SIMPLE_OPERATORS =
@@ -13,7 +13,7 @@ module Lox
         '{' => :left_brace,
         '}' => :right_brace,
         ',' => :comma,
-        '.' => :dot,
+        DOT => :dot,
         '-' => :minus,
         '+' => :plus,
         ';' => :semicolon,
@@ -69,6 +69,8 @@ module Lox
         Token.new(type:, lexeme:, line:)
       when QUOTE
         read_string_token
+      when method(:digit?)
+        read_number_token
       else
         read_character
         logger.error(line, 'Unexpected character')
@@ -106,6 +108,20 @@ module Lox
       Token.new(type: :string, lexeme:, literal:, line:)
     end
 
+    def read_number_token
+      lexeme = ''
+      stop_at_eof do
+        lexeme << read_character while digit?(next_character)
+        if next_character == DOT && digit?(next_character(lookahead: 1))
+          lexeme << read_character(DOT)
+          lexeme << read_character while digit?(next_character)
+        end
+      end
+      literal = Float(lexeme)
+
+      Token.new(type: :number, lexeme:, literal:, line:)
+    end
+
     def next_character(lookahead: 0)
       characters.peek(lookahead:)
     end
@@ -114,6 +130,10 @@ module Lox
       characters.next.tap do |actual|
         raise unless actual == expected || expected.nil?
       end
+    end
+
+    def digit?(character)
+      ('0'..'9').include?(character)
     end
 
     def stop_at_eof

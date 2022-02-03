@@ -92,6 +92,42 @@ RSpec.describe Lox::Scanner do
           { type: :eof }
         )
       end
+
+      it 'tokenises numbers without a fractional part' do
+        expect('123 456').to tokenise_as(
+          { type: :number, literal: 123 },
+          { type: :number, literal: 456 },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises numbers with a fractional part' do
+        expect('123.456 78.9').to tokenise_as(
+          { type: :number, literal: 123.456 },
+          { type: :number, literal: 78.9 },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a number before a dot' do
+        expect('123. 78.').to tokenise_as(
+          { type: :number, literal: 123 },
+          { type: :dot },
+          { type: :number, literal: 78 },
+          { type: :dot },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a number after a dot' do
+        expect('.123 .78').to tokenise_as(
+          { type: :dot },
+          { type: :number, literal: 123 },
+          { type: :dot },
+          { type: :number, literal: 78 },
+          { type: :eof }
+        )
+      end
     end
 
     shared_examples 'error handling' do
@@ -146,6 +182,31 @@ RSpec.describe Lox::Scanner do
       it 'tokenises a string ending with a non-empty comment' do
         expect('*// world').to tokenise_as(
           { type: :star },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a string ending with a number with no fractional part' do
+        expect('*42').to tokenise_as(
+          { type: :star },
+          { type: :number, literal: 42.0 },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a string ending with a number followed by a dot' do
+        expect('*42.').to tokenise_as(
+          { type: :star },
+          { type: :number, literal: 42.0 },
+          { type: :dot },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a string ending with a number with a fractional part' do
+        expect('*42.1').to tokenise_as(
+          { type: :star },
+          { type: :number, literal: 42.1 },
           { type: :eof }
         )
       end
