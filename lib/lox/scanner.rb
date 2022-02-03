@@ -3,7 +3,8 @@ require 'lox/token'
 
 module Lox
   class Scanner
-    EQUAL = '='
+    EQUAL, SLASH = %w[= /]
+    NEWLINE = "\n"
 
     SIMPLE_OPERATORS =
       {
@@ -16,7 +17,8 @@ module Lox
         '-' => :minus,
         '+' => :plus,
         ';' => :semicolon,
-        '*' => :star
+        '*' => :star,
+        SLASH => :slash
       }
 
     COMPOUND_OPERATORS =
@@ -48,6 +50,8 @@ module Lox
     attr_accessor :characters, :logger, :line
 
     def read_token
+      skip_comments
+
       case next_character
       when *SIMPLE_OPERATORS.keys
         lexeme = read_character
@@ -67,6 +71,17 @@ module Lox
         read_character
         logger.error(line, 'Unexpected character')
         read_token
+      end
+    end
+
+    def skip_comments
+      loop do
+        if 2.times.all? { |lookahead| next_character(lookahead:) == SLASH }
+          2.times { read_character(SLASH) }
+          read_character until next_character == NEWLINE
+        else
+          break
+        end
       end
     end
 

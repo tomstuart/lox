@@ -38,6 +38,24 @@ RSpec.describe Lox::Scanner do
           { type: :eof }
         )
       end
+
+      it 'tokenises slashes' do
+        expect('(/)').to tokenise_as(
+          { type: :left_paren },
+          { type: :slash },
+          { type: :right_paren },
+          { type: :eof }
+        )
+      end
+
+      it 'ignores comments' do
+        expect('(/)// hello world').to tokenise_as(
+          { type: :left_paren },
+          { type: :slash },
+          { type: :right_paren },
+          { type: :eof }
+        )
+      end
     end
 
     describe 'error handling' do
@@ -63,6 +81,28 @@ RSpec.describe Lox::Scanner do
         expect('*<=').to tokenise_as(
           { type: :star },
           { type: :less_equal },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a string ending with a slash' do
+        expect('*/').to tokenise_as(
+          { type: :star },
+          { type: :slash },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a string ending with an empty comment' do
+        expect('*//').to tokenise_as(
+          { type: :star },
+          { type: :eof }
+        )
+      end
+
+      it 'tokenises a string ending with a non-empty comment' do
+        expect('*// world').to tokenise_as(
+          { type: :star },
           { type: :eof }
         )
       end
