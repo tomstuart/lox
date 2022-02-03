@@ -1,3 +1,4 @@
+require 'lox/lookahead_iterator'
 require 'lox/token'
 
 module Lox
@@ -27,7 +28,7 @@ module Lox
       }
 
     def initialize(source, logger)
-      self.characters = source.each_char
+      self.characters = LookaheadIterator.new(source.each_char)
       self.logger = logger
       self.line = 1
     end
@@ -69,8 +70,8 @@ module Lox
       end
     end
 
-    def next_character
-      characters.peek
+    def next_character(lookahead: 0)
+      characters.peek(lookahead:)
     end
 
     def read_character(expected = nil)
