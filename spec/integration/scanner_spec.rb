@@ -13,7 +13,6 @@ RSpec.describe Lox::Scanner do
 
   matcher :tokenise_as do |*expected_token_attributes|
     match do |source|
-      logger = instance_double('Lox::Logger')
       scanner = Lox::Scanner.new(source, logger)
       actual_tokens = scanner.each_token
       actual_token_attributes =
@@ -23,6 +22,14 @@ RSpec.describe Lox::Scanner do
       @actual = actual_token_attributes
 
       expect(actual_token_attributes).to eq expected_token_attributes
+    end
+
+    chain :with_error do |message|
+      expect(logger).to receive(:error).with(a_kind_of(Integer), message)
+    end
+
+    def logger
+      @logger ||= instance_double('Lox::Logger')
     end
 
     diffable
