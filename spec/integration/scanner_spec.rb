@@ -131,6 +131,10 @@ RSpec.describe Lox::Scanner do
     end
 
     context 'without a trailing newline' do
+      def prepare_source(source)
+        source
+      end
+
       include_examples 'tokenising'
       include_examples 'error handling'
       include_examples 'EOF handling'
@@ -139,7 +143,7 @@ RSpec.describe Lox::Scanner do
 
   matcher :tokenise_as do |*expected_token_attributes|
     match do |source|
-      scanner = Lox::Scanner.new(source, logger)
+      scanner = Lox::Scanner.new(prepare_source(source), logger)
       actual_tokens = scanner.each_token
       actual_token_attributes =
         actual_tokens.zip(expected_token_attributes).map do |actual, expected|
