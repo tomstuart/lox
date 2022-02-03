@@ -3,7 +3,7 @@ require 'lox/token'
 
 module Lox
   class Scanner
-    EQUAL, SLASH = %w[= /]
+    EQUAL, QUOTE, SLASH = %w[= " /]
     WHITESPACE = ' ', "\t", "\r", (NEWLINE = "\n")
 
     SIMPLE_OPERATORS =
@@ -67,6 +67,8 @@ module Lox
           end
         end
         Token.new(type:, lexeme:, line:)
+      when QUOTE
+        read_string_token
       else
         read_character
         logger.error(line, 'Unexpected character')
@@ -88,6 +90,22 @@ module Lox
       end
     end
 
+    def read_string_token
+      lexeme = ''
+      lexeme << read_character(QUOTE)
+      error_at_eof 'Unterminated string' do
+        until next_character == QUOTE
+          character = read_character
+          lexeme << character
+          self.line += 1 if character == NEWLINE
+        end
+      end
+      lexeme << read_character(QUOTE)
+      literal = lexeme.slice(1...-1)
+
+      Token.new(type: :string, lexeme:, literal:, line:)
+    end
+
     def next_character(lookahead: 0)
       characters.peek(lookahead:)
     end
@@ -102,6 +120,15 @@ module Lox
       begin
         yield
       rescue StopIteration
+      end
+    end
+
+    def error_at_eof(message)
+      begin
+        yield
+      rescue StopIteration
+        logger.error(line, message)
+        raise
       end
     end
   end

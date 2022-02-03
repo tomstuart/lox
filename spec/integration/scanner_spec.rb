@@ -78,6 +78,20 @@ RSpec.describe Lox::Scanner do
           { type: :eof }
         )
       end
+
+      it 'tokenises string literals' do
+        expect('"hello world"').to tokenise_as(
+          { type: :string, literal: 'hello world' },
+          { type: :eof }
+        )
+      end
+
+      it 'records a string literal’s final line number' do
+        expect(%Q{";)\n;)\n;)"}).to tokenise_as(
+          { type: :string, literal: ";)\n;)\n;)", line: 3 },
+          { type: :eof }
+        )
+      end
     end
 
     shared_examples 'error handling' do
@@ -87,6 +101,13 @@ RSpec.describe Lox::Scanner do
           { type: :right_paren },
           { type: :eof }
         ).with_error('Unexpected character')
+      end
+
+      it 'reports an error for an unterminated string literal' do
+        expect('* "hello').to tokenise_as(
+          { type: :star },
+          { type: :eof }
+        ).with_error('Unterminated string')
       end
     end
 
